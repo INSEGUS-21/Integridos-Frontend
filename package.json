@@ -1,0 +1,7 @@
+{
+  "scripts": {
+    "build": "cd integridos/src && npm run build",
+    "start": "cd integridos/src && npm start",
+    "preview": "cd integridos/src && npm run preview"
+  }
+}
