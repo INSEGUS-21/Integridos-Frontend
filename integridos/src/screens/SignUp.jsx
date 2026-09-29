@@ -1,3 +1,14 @@
 export default function SignUp(){
-    return <p>Sign Up</p>
+    return (<>
+      <h1>Register</h1>
+      <form>
+        <label htmlFor="username">Username:</label><br />
+        <input type="text" id="username" name="username" /><br />
+
+        <label htmlFor="password">Password:</label><br />
+        <input type="password" id="password" name="password" /><br />
+
+        <input type="submit" value="Register" />
+      </form>
+      </>)
 }
