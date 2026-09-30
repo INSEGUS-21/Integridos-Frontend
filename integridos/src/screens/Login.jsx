@@ -19,7 +19,7 @@ export default function Login(){
     let password_resume = password;
     for (let i=0; i<3; i++){
       //pal hash de la contraseña 3 vece
-      password_resume=sha256(password_resume);
+      password_resume=sha256.hmac(secretKey, password_resume);
     }
 
     //nonce
