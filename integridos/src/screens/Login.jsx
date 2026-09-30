@@ -57,10 +57,8 @@ export default function Login(){
     }
   }
 
-
   return (   
       <>
-      {error && <p style={{ color: "red" }}>{error}</p>}
       <h1>Login</h1>
       <form>
 
@@ -74,6 +72,7 @@ export default function Login(){
         <input type="password" id="password" name="password" onChange = {(event) => setPassword(event.target.value)} /><br />
         <button type="button" onClick={login}>Entrar</button>
 
+        {error && <p style={{ color: "red" }}>{error}</p>}
       </form>
     </>
     )
