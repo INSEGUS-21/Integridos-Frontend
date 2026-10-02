@@ -62,7 +62,7 @@ export default function SignUp(){
           if(response.status===403) setError("Se ha detectado un problema de integridad, revisa la clave secreta porfavor");
           if(response.status===400) setError("Falta el nombre de usuario o la contraseña");
           if(response.status===409) setError("Ese nombre de usuario ya existe");
-          if(response.status==200) {
+          if(response.status==201) {
             setError("");
             navigate("/");
             
