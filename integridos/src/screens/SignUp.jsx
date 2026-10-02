@@ -2,12 +2,16 @@ import { useState } from "react";
 
 
 import Alert from '@mui/material/Alert';
+import {useNavigate} from "react-router";
 
 
 
 const BASE_URL_API="http://localhost:3000/api/v1";
+const BASE_URL_API_RENDER="http://integridos-backend.onrender.com/api/v1";
 
 export default function SignUp(){
+
+    const navigate=useNavigate()
 
     const [username,setUsername]=useState("");
     const [password,setPassword]=useState("");
@@ -44,7 +48,8 @@ export default function SignUp(){
         let nonce=toHex(crypto.getRandomValues(new Uint8Array(32)));
         let timestamp=Date.now();
 
-        let hmac=await hmacHex(secretKey, `${timestamp}.${nonce}${data}`);
+        let hmac=await hmacHex(secretKey, `${timestamp}.${nonce}.${data}`);
+
 
         try{
           let response=await fetch(BASE_URL_API+"/register",{method:'POST',
@@ -57,8 +62,15 @@ export default function SignUp(){
           });
           if(response.status===403) setError("Se ha detectado un problema de integridad, revisa la clave secreta porfavor");
           if(response.status===400) setError("Falta el nombre de usuario o la contraseña");
+          if(response.status===409) setError("Ese nombre de usuario ya existe");
+          if(response.status==200) {
+            setError("");
+            navigate("/");
+            
+
+          }
         }catch(e){
-          console.log(e);
+          
           setError("Ha ocurrido un error en el envío");
         }
 
@@ -99,7 +111,7 @@ export default function SignUp(){
         <button onClick={()=>{handleSendForm()}}>Enviar</button>
       </div>
 
-      {error && <Alert severity="error" >{error}</Alert>}
+      {error && <Alert severity="error" variant="filled" >{error}</Alert>}
       </>)
 
       
