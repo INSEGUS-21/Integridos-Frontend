@@ -25,10 +25,10 @@ export default function Login(){
     //nonce
 
     const nonce = toHex(crypto.getRandomValues(new Uint8Array(32)));
-    const timestamp = Date.now();
+    const timestamp = Date.now()/1000;
 
     //el hmac del body + clave
-    const body= JSON.stringify({ username, password: password_resume });
+    const body= JSON.stringify({ "username":username, "password": password_resume });
     const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}.${body}`);
 
     try{const res = await fetch(BASE_API+"/login", {method: "POST",
