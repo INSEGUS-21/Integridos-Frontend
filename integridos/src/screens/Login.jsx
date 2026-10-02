@@ -63,7 +63,7 @@ export default function Login(){
       <form>
 
         <label htmlFor="secretKey">SecretKey:</label><br />
-        <input type="text" id="secretKey" name="secretKey" onChange = {(event) => setSecretKey(event.target.value)} /><br />
+        <input type="password" id="secretKey" name="secretKey" onChange = {(event) => setSecretKey(event.target.value)} /><br />
       
         <label htmlFor="username">Username:</label><br />
         <input type="text" id="username" name="username" onChange = {(event) => setUsername(event.target.value)} /><br />
