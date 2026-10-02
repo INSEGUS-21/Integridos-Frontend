@@ -2,8 +2,12 @@ import { useState } from "react";
 
 
 import Alert from '@mui/material/Alert';
+<<<<<<< HEAD
 import {useNavigate} from "react-router";
 
+=======
+import {sha256} from 'js-sha256';
+>>>>>>> 2a2b3e40f7a2b1759ba566458a8d186787c40f39
 
 
 const BASE_URL_API="http://localhost:3000/api/v1";
@@ -36,13 +40,12 @@ export default function SignUp(){
     }
 
     const handleSendForm=async ()=>{
+        let passwordResume= password;
+        for (let i=0; i<3; i++){
+          passwordResume= sha256(passwordResume);
+        }
 
-        let passwordResume1=await hmacHex(secretKey, password);
-        let passwordResume2=await hmacHex(secretKey, passwordResume1);
-        let passwordResume3=await hmacHex(secretKey, passwordResume2);
-
-
-        const messageBody={"username":username,"password":passwordResume3};
+        const messageBody={"username":username,"password":passwordResume};
         const data=JSON.stringify(messageBody);
 
         let nonce=toHex(crypto.getRandomValues(new Uint8Array(32)));
