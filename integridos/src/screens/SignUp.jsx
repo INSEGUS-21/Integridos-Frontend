@@ -2,12 +2,8 @@ import { useState } from "react";
 
 
 import Alert from '@mui/material/Alert';
-<<<<<<< HEAD
-import {useNavigate} from "react-router";
-
-=======
 import {sha256} from 'js-sha256';
->>>>>>> 2a2b3e40f7a2b1759ba566458a8d186787c40f39
+import { useNavigate } from "react-router-dom";
 
 
 const BASE_URL_API="http://localhost:3000/api/v1";
