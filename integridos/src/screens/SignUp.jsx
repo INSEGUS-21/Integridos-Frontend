@@ -14,19 +14,19 @@ function validatePassword(password) {
   const errors = [];
 
   if (password.length < 8) {
-    errors.push(`The password must contain at least 8 characters`);
+    errors.push(`Debe tener al menos 8 caracteres`);
   }
   if (!/\p{Lu}/u.test(password)) {
-    errors.push("The password must contain at least one uppercase letter");
+    errors.push("Debe contener al menos una mayúscula");
   }
   if (!/\p{Ll}/u.test(password)) {
-    errors.push("The password must contain at least one lowercase letter");
+    errors.push("Debe contener al menos una minuscula");
   }
   if (!/\d/.test(password)) {
-    errors.push("The password must contain at least one number");
+    errors.push("Debe contener al menos un número");
   }
   if (!/[^\p{L}\p{N}\s]/u.test(password)) {
-    errors.push("The password must contain at least one special caracter");
+    errors.push("Debe contener al menos un carácter especial");
   }
 
   return { valid: errors.length === 0, errors };
@@ -110,7 +110,7 @@ export default function SignUp(){
 
     return (<>
       <h1>Register</h1>
-      
+
       <div>
         <label htmlFor="username">Nombre </label>
 
@@ -128,6 +128,11 @@ export default function SignUp(){
         }}/>
       </div>
 
+      <Alert severity="info" sx={{ my: 1 }}>
+      La contraseña debe tener entre 8 y 128 caracteres e incluir una mayúscula,
+      una minúscula, un número y un carácter especial.
+      </Alert>
+
       <div>
         <label htmlFor="key">Clave Secreta</label>
         <input id="key" type="password" onChange={(event)=>{
@@ -138,6 +143,7 @@ export default function SignUp(){
       <div>
         <button onClick={()=>{handleSendForm()}}>Enviar</button>
       </div>
+       
 
       {error && <Alert severity="error" variant="filled" >{error}</Alert>}
       </>)
