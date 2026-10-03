@@ -32,10 +32,6 @@ function validatePassword(password) {
   return { valid: errors.length === 0, errors };
 }
 
-
-
-
-
 export default function SignUp(){
 
     const navigate=useNavigate()
