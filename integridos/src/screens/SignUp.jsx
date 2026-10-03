@@ -9,6 +9,33 @@ import { useNavigate } from "react-router-dom";
 const BASE_URL_API="http://localhost:3000/api/v1";
 const BASE_URL_API_RENDER="http://integridos-backend.onrender.com/api/v1";
 
+
+function validatePassword(password) {
+  const errors = [];
+
+  if (password.length < 8) {
+    errors.push(`The password must contain at least 8 characters`);
+  }
+  if (!/\p{Lu}/u.test(password)) {
+    errors.push("The password must contain at least one uppercase letter");
+  }
+  if (!/\p{Ll}/u.test(password)) {
+    errors.push("The password must contain at least one lowercase letter");
+  }
+  if (!/\d/.test(password)) {
+    errors.push("The password must contain at least one number");
+  }
+  if (!/[^\p{L}\p{N}\s]/u.test(password)) {
+    errors.push("The password must contain at least one special caracter");
+  }
+
+  return { valid: errors.length === 0, errors };
+}
+
+
+
+
+
 export default function SignUp(){
 
     const navigate=useNavigate()
@@ -36,6 +63,12 @@ export default function SignUp(){
     }
 
     const handleSendForm=async ()=>{
+        const { valid, errors } = validatePassword(password);
+        if (!valid) {
+          setError(errors.join(". "));
+          return; // no se envía nada al servidor
+        }
+
         let passwordResume= password;
         for (let i=0; i<3; i++){
           passwordResume= sha256(passwordResume);
