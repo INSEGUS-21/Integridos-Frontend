@@ -78,7 +78,7 @@ export default function SignUp(){
         const data=JSON.stringify(messageBody);
 
         let nonce=toHex(crypto.getRandomValues(new Uint8Array(32)));
-        let timestamp=Date.now();
+        let timestamp=Date.now()/1000;
 
         let hmac=await hmacHex(secretKey, `${timestamp}.${nonce}.${data}`);
 
