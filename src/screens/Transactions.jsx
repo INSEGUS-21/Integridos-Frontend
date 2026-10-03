@@ -4,8 +4,8 @@ import CryptoJS from 'crypto-js';
 export default function Transactions(){
     
     const [formData, setFormData] = useState({
-        originAccount: '',
-        destinationAccount: '',
+        origin_account: '',
+        destination_account: '',
         amount: '',
         currency: '',
         key: ''
@@ -41,7 +41,7 @@ export default function Transactions(){
         }
 
         try {
-            const response = await fetch('https://integridos-backend.onrender.com/api/v1/transactions', {
+            const response = await fetch('http://localhost:3000/api/v1/transactions', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -57,12 +57,12 @@ export default function Transactions(){
             throw new Error('Ocurrió un error al procesar la transferencia');
         }
 
-        const result = await response.json();
+        await response.text();
         alert('¡Transferencia realizada con éxito!');
 
         setFormData({
-            originAccount: '',
-            destinationAccount: '',
+            origin_account: '',
+            destination_account: '',
             amount: '',
             currency: '',
             key: ''
@@ -79,16 +79,16 @@ export default function Transactions(){
                 <label>Origin Account:</label>
                 <input
                 type="text"
-                name="originAccount"               
-                value={formData.originAccount}     
+                name="origin_account"               
+                value={formData.origin_account}     
                 onChange={handleChange}         
                 />
 
                 <label>Destination Account:</label>
                 <input
                 type="text"
-                name="destinationAccount"               
-                value={formData.destinationAccount}     
+                name="destination_account"               
+                value={formData.destination_account}     
                 onChange={handleChange}         
                 />
 
