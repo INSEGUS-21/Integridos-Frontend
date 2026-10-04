@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import CryptoJS from 'crypto-js';
+import { useNavigate } from 'react-router-dom';
+
 
 export default function Transactions(){
-    
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         origin_account: '',
         destination_account: '',
@@ -52,6 +55,7 @@ export default function Transactions(){
             },
             body: rawBody
         });
+        
 
         if (!response.ok) {
             throw new Error('Ocurrió un error al procesar la transferencia');
@@ -74,6 +78,56 @@ export default function Transactions(){
             setIsSubmitting(false);
         }
     };
+
+
+    const handleLogout = async () => {
+        setError(null);
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/');
+            return;
+        }
+        if (!formData.key) {
+            setError('Escribe la clave secreta para cerrar sesión');
+            return;
+        }
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        const nonce = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
+        const rawBody = '{}';
+        const mensaje = `${timestamp}.${nonce}.${rawBody}`;
+        const hmac = CryptoJS.HmacSHA256(mensaje, formData.key).toString(CryptoJS.enc.Hex);
+
+        try {
+            const response = await fetch('http://localhost:3000/api/v1/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'hmac': hmac,
+                    'timestamp': timestamp.toString(),
+                    'nonce': nonce,
+                    'authorization': `Bearer ${token}`,
+                },
+                body: rawBody
+            });
+
+            if (response.ok || response.status === 401) {
+                localStorage.removeItem('token'); //borra token navegador
+                navigate('/');
+            } else if (response.status === 403) {
+                setError('Clave secreta incorrecta, no se ha cerrado la sesión');
+            } else {
+                setError('No se pudo cerrar la sesión');
+            }
+        } catch (err) {
+            setError('No se pudo conectar con el servidor');
+        }
+    };
+
+
+
+
 
     return (<form onSubmit={handleSubmit}>
                 <label>Origin Account:</label>
@@ -121,5 +175,10 @@ export default function Transactions(){
                 <button type="submit" disabled={isSubmitting}>
                     {isSubmitting ? 'Processing...' : 'Send form'}
                 </button>
+
+                <button type="button" onClick={handleLogout}>
+                    Logout
+                </button>
+
             </form>);
 }
