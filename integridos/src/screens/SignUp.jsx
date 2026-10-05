@@ -64,8 +64,8 @@ export default function SignUp(){
           setError(errors.join(". "));
           return; // no se envía nada al servidor
         }
-
-        let passwordResume= password;
+        let salt=crypto.getRandomValues(new Uint8Array(4));
+        let passwordResume= password+String(salt);
         for (let i=0; i<3; i++){
           passwordResume= sha256(passwordResume);
         }
@@ -75,8 +75,9 @@ export default function SignUp(){
 
         let nonce=toHex(crypto.getRandomValues(new Uint8Array(32)));
         let timestamp=Date.now()/1000;
+        
 
-        let hmac=await hmacHex(secretKey, `${timestamp}.${nonce}.${data}`);
+        let hmac=await hmacHex(secretKey, `${timestamp}.${nonce}.${salt}.${data}`);
 
 
         try{
@@ -85,7 +86,8 @@ export default function SignUp(){
             headers:{"Content-Type":"application/json", 
               "nonce":nonce,
               "timestamp":String(timestamp),
-              "hmac":hmac}
+              "hmac":hmac,
+              "salt": String(salt)}
             
           });
           if(response.status===403) setError("Se ha detectado un problema de integridad, revisa la clave secreta porfavor");
