@@ -64,8 +64,8 @@ export default function SignUp(){
           setError(errors.join(". "));
           return; // no se envía nada al servidor
         }
-        let salt=crypto.getRandomValues(new Uint8Array(4));
-        let passwordResume= password+String(salt);
+        let salt=crypto.randomBytes(16).toString('hex');
+        let passwordResume= password+salt;
         for (let i=0; i<3; i++){
           passwordResume= sha256(passwordResume);
         }
