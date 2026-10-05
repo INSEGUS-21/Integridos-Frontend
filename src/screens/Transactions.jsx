@@ -44,7 +44,7 @@ export default function Transactions(){
         }
 
         try {
-            const response = await fetch('http://localhost:3000/api/v1/transactions', {
+            const response = await fetch('http://localhost:8080/api/v1/transactions', {
             method: 'POST',
             headers: {
             'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export default function Transactions(){
         const hmac = CryptoJS.HmacSHA256(mensaje, formData.key).toString(CryptoJS.enc.Hex);
 
         try {
-            const response = await fetch('http://localhost:3000/api/v1/logout', {
+            const response = await fetch('http://localhost:8080/api/v1/logout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

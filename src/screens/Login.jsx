@@ -8,7 +8,7 @@ function toHex(bytes) {
 
 export default function Login(){
   
-  const BASE_API= "https://integridos-backend.onrender.com/api/v1";
+  const BASE_API= "http://localhost:8080/api/v1";
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -22,7 +22,7 @@ export default function Login(){
       const timestamp = Date.now()/1000;
 
 
-      const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}`);
+      const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}.`);
       const res = await fetch(BASE_API+`/getUserSalt/${user}`, {method: "GET",
                   headers: {'Content-Type': 'application/json',
                     'nonce':nonce,
@@ -57,7 +57,7 @@ export default function Login(){
 
     //el hmac del body + clave
     const body= JSON.stringify({ "username":username, "password": password_resume });
-    const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}.${salt}.${body}`);
+    const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}.${body}`);
 
     try{const res = await fetch(BASE_API+"/login", {method: "POST",
                   headers: {'Content-Type': 'application/json',

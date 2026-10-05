@@ -6,7 +6,7 @@ import {sha256} from 'js-sha256';
 import { useNavigate } from "react-router-dom";
 
 
-const BASE_URL_API="http://localhost:3000/api/v1";
+const BASE_URL_API="http://localhost:8080/api/v1";
 const BASE_URL_API_RENDER="http://integridos-backend.onrender.com/api/v1";
 
 
@@ -64,7 +64,7 @@ export default function SignUp(){
           setError(errors.join(". "));
           return; // no se envía nada al servidor
         }
-        let salt=crypto.randomBytes(16).toString('hex');
+        let salt=toHex(crypto.getRandomValues(new Uint8Array(16)));
         let passwordResume= password+salt;
         for (let i=0; i<3; i++){
           passwordResume= sha256(passwordResume);
