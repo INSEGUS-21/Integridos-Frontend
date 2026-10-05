@@ -1,10 +1,17 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import CryptoJS from 'crypto-js';
 import { useNavigate } from 'react-router-dom';
 
 
 export default function Transactions(){
     const navigate = useNavigate();
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/', { replace: true }); 
+        }
+    }, []);
 
     const [formData, setFormData] = useState({
         origin_account: '',
@@ -88,25 +95,11 @@ export default function Transactions(){
             navigate('/');
             return;
         }
-        if (!formData.key) {
-            setError('Escribe la clave secreta para cerrar sesión');
-            return;
-        }
-
-        const timestamp = Math.floor(Date.now() / 1000);
-        const nonce = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
-        const rawBody = '{}';
-        const mensaje = `${timestamp}.${nonce}.${rawBody}`;
-        const hmac = CryptoJS.HmacSHA256(mensaje, formData.key).toString(CryptoJS.enc.Hex);
-
         try {
             const response = await fetch('http://localhost:8080/api/v1/logout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'hmac': hmac,
-                    'timestamp': timestamp.toString(),
-                    'nonce': nonce,
                     'authorization': `Bearer ${token}`,
                 },
                 body: rawBody
@@ -115,8 +108,6 @@ export default function Transactions(){
             if (response.ok || response.status === 401) {
                 localStorage.removeItem('token'); //borra token navegador
                 navigate('/');
-            } else if (response.status === 403) {
-                setError('Clave secreta incorrecta, no se ha cerrado la sesión');
             } else {
                 setError('No se pudo cerrar la sesión');
             }
@@ -124,10 +115,6 @@ export default function Transactions(){
             setError('No se pudo conectar con el servidor');
         }
     };
-
-
-
-
 
     return (<form onSubmit={handleSubmit}>
                 <label>Origin Account:</label>
