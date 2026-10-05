@@ -15,21 +15,49 @@ export default function Login(){
   const [error, setError] = useState("");
   const [secretKey, setSecretKey] = useState("");
 
-  async function login() {
-    let password_resume = password;
-    for (let i=0; i<3; i++){
-      //pal hash de la contraseña 3 vece
-      password_resume=sha256(password_resume);
+  async function getSalt(user){
+    try {
+      
+      const nonce = toHex(crypto.getRandomValues(new Uint8Array(32)));
+      const timestamp = Date.now()/1000;
+
+
+      const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}`);
+      const res = await fetch(BASE_API+`/getUserSalt/${user}`, {method: "GET",
+                  headers: {'Content-Type': 'application/json',
+                    'nonce':nonce,
+                    'timestamp':String(timestamp),
+                    'hmac': hmac}
+                }                  
+      );
+      let data= await res.json();
+      return data.salt;
+
+    }catch(err){
+      setError("No se pudo conectar con el servidor");
+
     }
+
+  }
+
+  async function login() {
 
     //nonce
 
     const nonce = toHex(crypto.getRandomValues(new Uint8Array(32)));
     const timestamp = Date.now()/1000;
 
+    let salt = await getSalt(username);
+    let password_resume = password + String(salt);
+    for (let i=0; i<3; i++){
+      //pal hash de la contraseña 3 vece
+      password_resume=sha256(password_resume);
+    }
+
+
     //el hmac del body + clave
     const body= JSON.stringify({ "username":username, "password": password_resume });
-    const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}.${body}`);
+    const hmac = sha256.hmac(secretKey, `${timestamp}.${nonce}.${salt}.${body}`);
 
     try{const res = await fetch(BASE_API+"/login", {method: "POST",
                   headers: {'Content-Type': 'application/json',
