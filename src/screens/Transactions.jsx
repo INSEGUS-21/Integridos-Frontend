@@ -5,13 +5,11 @@ import { useNavigate } from 'react-router-dom';
 
 export default function Transactions(){
     const navigate = useNavigate();
+    const token = localStorage.getItem('token');
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/', { replace: true }); 
-        }
-    }, []);
+        if (!token) navigate('/', { replace: true });
+    }, [token, navigate]);
 
     const [formData, setFormData] = useState({
         origin_account: '',
@@ -90,32 +88,41 @@ export default function Transactions(){
     const handleLogout = async () => {
         setError(null);
 
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/');
-            return;
-        }
+        if (!token) { navigate('/', { replace: true }); return; }
+        if (!formData.key) { setError('Introduce la clave para cerrar sesión'); return; }
+
+        const timestamp = Math.floor(Date.now() / 1000);
+        const nonce = CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
+        const rawBody = '';
+        const hmac = CryptoJS.HmacSHA256(`${timestamp}.${nonce}.${rawBody}`, formData.key)
+            .toString(CryptoJS.enc.Hex);
+
         try {
+
+            console.log("COSAAA")
             const response = await fetch('http://localhost:8080/api/v1/logout', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
+                    'hmac': hmac,
+                    'timestamp': timestamp.toString(),
+                    'nonce': nonce,
                     'authorization': `Bearer ${token}`,
                 },
                 body: rawBody
             });
 
             if (response.ok || response.status === 401) {
-                localStorage.removeItem('token'); //borra token navegador
-                navigate('/');
+                localStorage.removeItem('token');
+                navigate('/', { replace: true });
             } else {
-                setError('No se pudo cerrar la sesión');
+                setError('No se pudo cerrar la sesión (¿clave incorrecta?)');
             }
         } catch (err) {
             setError('No se pudo conectar con el servidor');
         }
     };
-
+    if (!token) return null;
     return (<form onSubmit={handleSubmit}>
                 <label>Origin Account:</label>
                 <input
